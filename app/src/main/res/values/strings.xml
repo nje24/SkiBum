@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SkiBum</string>
+    <string name="title_activity_near_you">Map</string>
+</resources>
