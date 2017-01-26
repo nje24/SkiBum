@@ -17,4 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), NearYou.class);
         startActivity(intent);
     }
+
+    public void allMountains(View v){
+        Intent intent = new Intent(getApplicationContext(), allMountains.class);
+        startActivity(intent);
+    }
 }

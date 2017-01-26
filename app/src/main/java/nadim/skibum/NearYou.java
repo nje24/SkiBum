@@ -28,12 +28,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import nadim.skibum.R;
+
+import static java.lang.Double.parseDouble;
+import static java.lang.Long.parseLong;
 
 public class NearYou extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -109,6 +114,8 @@ public class NearYou extends FragmentActivity implements OnMapReadyCallback, Goo
     private void query(Location location) {
         JSONObject obj = new JSONObject();
         ArrayList<String> passer = new ArrayList<String>();
+        double latHold;
+        double longHold;
         String url = "https://us-west-2.api.scaphold.io/graphql/accidental-oil";
         String que = "{\n" +
                 "viewer {\n" +
@@ -124,7 +131,25 @@ public class NearYou extends FragmentActivity implements OnMapReadyCallback, Goo
                 "\t}\n" +
                 "}";
         HttpUrlConnectionJson con = new HttpUrlConnectionJson();
-        con.execute(url, que);
+        ArrayList<ArrayList> markInfo = new ArrayList<ArrayList>();
+        try {
+            markInfo = con.execute(url, que).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        for(int i = 0; i < markInfo.size() - 1; i++){
+            latHold = parseDouble(markInfo.get(1).get(i).toString());
+            longHold = parseDouble(markInfo.get(2).get(i).toString());
+            LatLng hold = new LatLng(latHold, longHold);
+            MarkerOptions options = new MarkerOptions()
+                    .position(hold)
+                    .title(markInfo.get(0).get(i).toString());
+            mMap.addMarker(options);
+
+        }
+
     }
 
     @Override

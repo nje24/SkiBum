@@ -1,6 +1,7 @@
 package nadim.skibum;
 
 import android.os.AsyncTask;
+import android.util.JsonReader;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,11 +20,11 @@ import java.util.Map;
 /**
  * Created by nadim on 1/24/17.
  */
-public class HttpUrlConnectionJson extends AsyncTask<String, Void, String>{
+public class HttpUrlConnectionJson extends AsyncTask<String, Void, ArrayList>{
     private static final String TAG = "HttpUrlConnectionJson";
 
     @Override
-    protected String doInBackground(String... strings) {
+    protected ArrayList doInBackground(String... strings) {
         String API = strings[0];
         String query = strings[1];
         HttpURLConnection connection = null;
@@ -50,36 +51,35 @@ public class HttpUrlConnectionJson extends AsyncTask<String, Void, String>{
                 BufferedReader bufferedReader = new BufferedReader(streamReader);
                 String response = null;
                 while ((response = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(response + "\n");
+                    stringBuilder.append(response);
                 }
                 bufferedReader.close();
 
+                JSONObject json = new JSONObject(stringBuilder.toString()).getJSONObject("data").getJSONObject("viewer").getJSONObject("allMountains");
+                JSONArray edges = json.getJSONArray("edges");
+
                 Log.d(TAG, stringBuilder.toString());
-                String[] nodes = stringBuilder.toString().split("edges");
-                nodes[1] = "{" + "\"" + "edges" + nodes[1];
-                String s = nodes[1].substring(0,nodes[1].length()-3);
-                Log.d(TAG, s);
-                JSONObject json = new JSONObject(s);
-                JSONArray jsonArray = json.getJSONArray("edges");
+
                 ArrayList<String> allNames = new ArrayList<String>();
                 ArrayList<String> allLats = new ArrayList<String>();
                 ArrayList<String> allLongs = new ArrayList<String>();
-                for (int i=0; i<jsonArray.length(); i++) {
-                    JSONObject node = jsonArray.getJSONObject(i);
-                    Log.d(TAG, node.toString(1));
-                    String name = node.getString("Name");
+                ArrayList<ArrayList> mapVals =new ArrayList<ArrayList>();
+                for (int i=0; i<edges.length(); i++) {
+                    JSONObject node = edges.getJSONObject(i);
 
-                    Log.d(TAG, "Name " + name.toString());
+                    JSONObject node2 = node.getJSONObject("node");
+                    allNames.add(node2.getString("Name"));
+                    allLats.add(node2.getString("Latitude"));
+                    allLongs.add(node2.getString("Longitude"));
 
                 }
-
-               // Log.d(TAG, jsonArray.toString());
-               // Log.d(TAG, allNames.toString());
-              //  Log.d(TAG, allLats.toString());
-              //  Log.d(TAG, allLongs.toString());
+                mapVals.add(allNames);
+                mapVals.add(allLats);
+                mapVals.add(allLongs);
 
 
-                return stringBuilder.toString();
+
+                return mapVals;
 
             } else {
                 Log.e(TAG, connection.getResponseMessage());

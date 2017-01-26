@@ -8,7 +8,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
@@ -38,7 +38,8 @@
 
         <activity
             android:name=".NearYou"
-            android:label="@string/title_activity_near_you"></activity>
+            android:label="@string/title_activity_near_you" />
+        <activity android:name=".allMountains"></activity>
     </application>
 
 </manifest>
